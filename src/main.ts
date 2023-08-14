@@ -6,9 +6,12 @@ async function main() {
   const app = document.getElementById("app");
   if (!app) throw new Error("No app element");
   const canvas = document.createElement("canvas");
-  const width = 600;
-  const height = 600;
-  const radius = 250;
+  // get the size of the window
+  const { innerWidth, innerHeight } = window;
+  const v = Math.min(innerWidth, innerHeight);
+  const width = v;
+  const height = v;
+  const radius = (v - 100) / 2;
   canvas.width = width;
   canvas.height = height;
 
@@ -53,6 +56,7 @@ async function main() {
 
   // add inputs to change the location
   const inputsContainer = document.createElement("div");
+  const latContainer = document.createElement("div");
   const latLabel = document.createElement("label");
   latLabel.innerHTML = "Latitude";
   latLabel.style.margin = "0 0.5rem";
@@ -60,6 +64,9 @@ async function main() {
   const latInput = document.createElement("input");
   latInput.type = "number";
   latInput.value = (-20).toString();
+  latContainer.append(latLabel, latInput);
+
+  const lonContainer = document.createElement("div");
   const lonLabel = document.createElement("label");
   lonLabel.innerHTML = "Longitude";
   lonLabel.style.margin = "0 0.5rem";
@@ -67,7 +74,10 @@ async function main() {
   const lonInput = document.createElement("input");
   lonInput.type = "number";
   lonInput.value = (-44).toString();
-  inputsContainer.append(latLabel, latInput, lonLabel, lonInput);
+
+  lonContainer.append(lonLabel, lonInput);
+  inputsContainer.append(latContainer, lonContainer);
+
   inputsContainer.style.marginBottom = "2rem";
   [latInput, lonInput].forEach((input) => {
     input.onchange = () => {
