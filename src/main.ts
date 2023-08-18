@@ -45,6 +45,10 @@ async function main() {
 
   // time inputs
   const timeContainer = document.createElement("div");
+  const calendarLabel = document.createElement("label");
+  calendarLabel.innerHTML = "UTC Time:";
+  calendarLabel.style.margin = "0 0.5rem";
+  calendarLabel.style.color = "#487297";
   const calendarInput = document.createElement("input");
   calendarInput.type = "date";
   calendarInput.value = date.toISOString().slice(0, 10);
@@ -55,7 +59,7 @@ async function main() {
   timeInput.value = date.toISOString().slice(11, 16);
   timeInput.style.margin = "0 0.5rem";
   timeInput.style.color = "#487297";
-  timeContainer.append(calendarInput, timeInput);
+  timeContainer.append(calendarLabel, calendarInput, timeInput);
   timeContainer.style.display = "flex";
   timeContainer.style.justifyContent = "center";
   [calendarInput, timeInput].forEach((input) => {
@@ -80,6 +84,7 @@ async function main() {
   latLabel.style.color = "#487297";
   const latInput = document.createElement("input");
   latInput.type = "number";
+  latInput.style.width = "4rem";
   latInput.value = geolat.toFixed(2);
   latContainer.append(latLabel, latInput);
   const lonContainer = document.createElement("div");
@@ -89,6 +94,7 @@ async function main() {
   lonLabel.style.color = "#487297";
   const lonInput = document.createElement("input");
   lonInput.type = "number";
+  lonInput.style.width = "4rem";
   lonInput.value = geolon.toFixed(2);
   lonContainer.append(lonLabel, lonInput);
   geoContainer.append(latContainer, lonContainer);
