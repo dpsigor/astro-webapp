@@ -13,11 +13,11 @@ export const signs = [
   "♑︎",
   "♒︎",
   "♓︎",
-]
+];
 
 export enum HouseSystem {
-  Placidus = 'P'.charCodeAt(0),
-  Regiomontanus = 'R'.charCodeAt(0),
+  Placidus = "P".charCodeAt(0),
+  Regiomontanus = "R".charCodeAt(0),
 }
 
 export enum Planet {
@@ -38,7 +38,7 @@ export const planets = [
   Planet.Mars,
   Planet.Jupiter,
   Planet.Saturn,
-]
+];
 
 export const planetSign = {
   [Planet.Sun]: "☉",
@@ -48,7 +48,7 @@ export const planetSign = {
   [Planet.Mars]: "♂",
   [Planet.Jupiter]: "♃",
   [Planet.Saturn]: "♄",
-}
+};
 
 interface Astro {
   memory: WebAssembly.Memory;
@@ -83,7 +83,7 @@ interface Astro {
 export class SwEph {
   constructor(private astro: Astro) {}
 
-  jd(date: Date): { jd: number, err?: string } {
+  jd(date: Date): { jd: number; err?: string } {
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth() + 1;
     const day = date.getUTCDate();
@@ -106,25 +106,28 @@ export class SwEph {
     );
     if (jdCode < 0) {
       const serr = new Uint8Array(this.astro.memory.buffer, serrPtr, 256);
-      return { jd: 0, err: new TextDecoder().decode(serr) }
+      return { jd: 0, err: new TextDecoder().decode(serr) };
     }
     const dret = new Float64Array(this.astro.memory.buffer, dretPtr, 2);
     return { jd: dret[1] };
   }
 
-  planetPos(jd: number, planet: Planet): { lon: number; err?: string } {
-    const iflag = 0; // no flags
+  planetPos(
+    jd: number,
+    planet: Planet
+  ): { lon: number; slon: number; err?: string } {
+    const iflag = 128; // no flags
     const xxPtr = 0;
     const serrPtr = 6 * 8;
     const calcCode = this.astro.swe_calc_ut(jd, planet, iflag, xxPtr, serrPtr);
     if (calcCode < 0) {
       const serr2 = new Uint8Array(this.astro.memory.buffer, serrPtr, 256);
       const err = new TextDecoder().decode(serr2);
-      return { lon: 0, err };
+      return { lon: 0, slon: 0, err };
     }
     const xx = new Float64Array(this.astro.memory.buffer, xxPtr, 6);
     const lon = xx[0];
-    return { lon };
+    return { lon, slon: xx[3] };
   }
 
   houses(jd: number, geolat: number, geolon: number, hsys: HouseSystem) {
