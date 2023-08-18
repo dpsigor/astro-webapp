@@ -36,6 +36,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Move astro.wasm from public to dist
+        run: mv ./astro.wasm ./dist
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
@@ -43,8 +45,6 @@ jobs:
         with:
           # Upload dist repository
           path: './dist'
-      - name: Move astro.wasm from public to dist
-        run: mv ./astro.wasm ./dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
