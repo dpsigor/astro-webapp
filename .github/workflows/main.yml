@@ -38,6 +38,8 @@ jobs:
         run: npm run build
       - name: Move astro.wasm from public to dist
         run: mv ./astro.wasm ./dist
+      - name: Move astro.wasm from public to dist
+        run: mv ./public/Astrodotbasic-ow3Pd.ttf ./dist
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact

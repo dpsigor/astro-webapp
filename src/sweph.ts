@@ -1,18 +1,27 @@
 import { WASI, File, OpenFile } from "@bjorn3/browser_wasi_shim";
 
-export const signs = [
-  "♈︎",
-  "♉︎",
-  "♊︎",
-  "♋︎",
-  "♌︎",
-  "♍︎",
-  "♎︎",
-  "♏︎",
-  "♐︎",
-  "♑︎",
-  "♒︎",
-  "♓︎",
+export const nodeGlyphs = [
+  "L", // north
+  "M",
+];
+
+export const partFortuneGlyph = 'O'
+export const ACGlyph = 'P'
+export const MCGlyph = 'Q'
+
+export const signGlyph = [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
 ];
 
 export enum HouseSystem {
@@ -40,14 +49,14 @@ export const planets = [
   Planet.Saturn,
 ];
 
-export const planetSign = {
-  [Planet.Sun]: "☉",
-  [Planet.Moon]: "☽",
-  [Planet.Mercury]: "☿",
-  [Planet.Venus]: "♀",
-  [Planet.Mars]: "♂",
-  [Planet.Jupiter]: "♃",
-  [Planet.Saturn]: "♄",
+export const planetGlyph = {
+  [Planet.Sun]: "A",
+  [Planet.Moon]: "B",
+  [Planet.Mercury]: "C",
+  [Planet.Venus]: "D",
+  [Planet.Mars]: "E",
+  [Planet.Jupiter]: "F",
+  [Planet.Saturn]: "G",
 };
 
 interface Astro {

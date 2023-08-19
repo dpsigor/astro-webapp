@@ -1,9 +1,9 @@
 import { Chart } from "./chart";
 import "./style.css";
-import { planetSign, planets, signs, swephInit } from "./sweph";
+import { planetGlyph, planets, signGlyph, swephInit } from "./sweph";
 
-const lskGeolat ="default.geolat" ;
-const lskGeolon ="default.geolon" ;
+const lskGeolat = "default.geolat";
+const lskGeolon = "default.geolon";
 
 async function main() {
   const app = document.getElementById("app");
@@ -105,8 +105,8 @@ async function main() {
   geoContainer.style.justifyContent = "center";
   [latInput, lonInput].forEach((input) => {
     input.onchange = () => {
-      const geolat = Number(latInput.value)
-      const geolon = Number(lonInput.value)
+      const geolat = Number(latInput.value);
+      const geolon = Number(lonInput.value);
       localStorage.setItem(lskGeolat, latInput.value);
       localStorage.setItem(lskGeolon, lonInput.value);
       chart.render({ geolat, geolon });
@@ -116,7 +116,7 @@ async function main() {
   // button to show, in a floating div, the table of planetary positions
   const formatTableAngle = (angle: number) => {
     let deg = Math.floor(angle);
-    const sign = signs[Math.floor(deg / 30)];
+    const sign = signGlyph[Math.floor(deg / 30)];
     const min = Math.floor((angle - deg) * 60);
     console.log(min);
     const sec = Math.floor(((angle - deg) * 60 - min) * 60);
@@ -147,7 +147,7 @@ async function main() {
     planets.forEach((planet) => {
       const tr = document.createElement("tr");
       const td1 = document.createElement("td");
-      td1.innerHTML = planetSign[planet];
+      td1.innerHTML = planetGlyph[planet];
       td1.style.border = "1px solid #487297";
       td1.style.padding = "0.5rem";
       const td2 = document.createElement("td");

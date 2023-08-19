@@ -2,9 +2,9 @@ import {
   HouseSystem,
   Planet,
   SwEph,
-  planetSign,
+  planetGlyph,
   planets,
-  signs,
+  signGlyph,
 } from "./sweph";
 
 export interface Opts {
@@ -122,7 +122,7 @@ export class Chart {
 
     // write planets
     {
-      this.ctx.font = "20px Arial";
+      this.ctx.font = "20px glyphsFont";
       this.ctx.fillStyle = "#00CCFF";
       this.ctx.textAlign = "center";
       const metrics = this.ctx.measureText("M");
@@ -130,7 +130,7 @@ export class Chart {
         metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
       const radiusPlanets = this.radius + 20;
       for (const planet of planets) {
-        const sign = planetSign[planet];
+        const sign = planetGlyph[planet];
         const { lon, slon, err } = this.sweph.planetPos(jd, planet);
         if (err) throw err;
         const rads = ((angleOffset - lon) * Math.PI) / 180;
@@ -148,7 +148,7 @@ export class Chart {
             x + metrics.width / 2,
             y - metrics.fontBoundingBoxAscent / 2
           );
-          this.ctx.font = "20px Arial";
+          this.ctx.font = "20px glyphsFont";
           this.ctx.textAlign = "center";
         }
         // small line from the planet to the circle
@@ -228,7 +228,7 @@ export class Chart {
 
     // draw sign lines and write sign symbols
     {
-      this.ctx.font = "20px Arial";
+      this.ctx.font = "25px glyphsFont";
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.textAlign = "center";
       this.ctx.strokeStyle = "#FFFFFF";
@@ -236,12 +236,12 @@ export class Chart {
       const fontHeight =
         metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
       const radiusSign = this.radius + 35;
-      for (let i = 0; i < signs.length; i++) {
+      for (let i = 0; i < signGlyph.length; i++) {
         const signRads = ((angleOffset - i * 30 - 15) * Math.PI) / 180;
         const x = this.width / 2 + radiusSign * Math.cos(signRads);
         let y = this.height / 2 + radiusSign * Math.sin(signRads);
         y += fontHeight / 4;
-        this.ctx.fillText(signs[i], x, y);
+        this.ctx.fillText(signGlyph[i], x, y);
         const strokeRads = ((angleOffset - i * 30) * Math.PI) / 180;
         const x0 = this.width / 2 + this.radius * Math.cos(strokeRads);
         const y0 = this.height / 2 + this.radius * Math.sin(strokeRads);

@@ -1,3 +1,8 @@
+@font-face {
+  font-family: glyphsFont;
+  src: url(./Astrodotbasic-ow3Pd.ttf);
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
