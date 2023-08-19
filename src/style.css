@@ -30,7 +30,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   max-height: 100vh;
-  background-color: #1C1C1C;
+  background-color: #1c1c1c;
 }
 
 h1 {
@@ -95,5 +95,30 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+.time-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.geo-container {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.geo-container > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 350px) {
+  .geo-container,
+  .time-container {
+    flex-direction: column;
   }
 }

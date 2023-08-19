@@ -12,7 +12,7 @@ async function main() {
   const canvas = document.createElement("canvas");
   // get the size of the window
   const { innerWidth, innerHeight } = window;
-  let v = Math.min(innerWidth, innerHeight);
+  let v = Math.min(innerWidth - 20, innerHeight);
   if (v > 600) v = 600;
   if (v > innerHeight - 200) v = innerHeight - 210;
   if (v > innerWidth - 10) v = innerWidth - 10;
@@ -64,8 +64,7 @@ async function main() {
   timeInput.style.margin = "0 0.5rem";
   timeInput.style.color = "#487297";
   timeContainer.append(calendarLabel, calendarInput, timeInput);
-  timeContainer.style.display = "flex";
-  timeContainer.style.justifyContent = "center";
+  timeContainer.classList.add("time-container");
   [calendarInput, timeInput].forEach((input) => {
     input.onchange = () => {
       const [year, month, day] = calendarInput.value.split("-").map(Number);
@@ -102,9 +101,7 @@ async function main() {
   lonInput.value = geolon.toFixed(2);
   lonContainer.append(lonLabel, lonInput);
   geoContainer.append(latContainer, lonContainer);
-  geoContainer.style.marginBottom = "2rem";
-  geoContainer.style.display = "flex";
-  geoContainer.style.justifyContent = "center";
+  geoContainer.classList.add("geo-container");
   [latInput, lonInput].forEach((input) => {
     input.onchange = () => {
       const geolat = Number(latInput.value);

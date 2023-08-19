@@ -25,7 +25,6 @@ export async function loadFonts() {
     font.style = fontStyle;
     await font.load();
     document.fonts.add(font);
-    console.log(fontFamily, "loaded");
     // apply font styles to body
     let fontDOMEl = document.createElement("div");
     fontDOMEl.textContent = "";
