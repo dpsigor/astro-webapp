@@ -59,6 +59,92 @@ export const planetGlyph = {
   [Planet.Saturn]: "G",
 };
 
+export enum Sign {
+  Aries = 0,
+  Taurus = 1,
+  Gemini = 2,
+  Cancer = 3,
+  Leo = 4,
+  Virgo = 5,
+  Libra = 6,
+  Scorpio = 7,
+  Sagittarius = 8,
+  Capricorn = 9,
+  Aquarius = 10,
+  Pisces = 11,
+}
+
+export const signs = [
+  Sign.Aries ,
+  Sign.Taurus ,
+  Sign.Gemini ,
+  Sign.Cancer ,
+  Sign.Leo ,
+  Sign.Virgo ,
+  Sign.Libra ,
+  Sign.Scorpio ,
+  Sign.Sagittarius ,
+  Sign.Capricorn ,
+  Sign.Aquarius ,
+  Sign.Pisces ,
+]
+
+export enum Dignity {
+  Domicile = 1,
+  Detriment = 2,
+  Exaltation = 3,
+  Fall = 4,
+}
+
+export function dignity(p: Planet, lon: number): Dignity | undefined {
+  const sign = signs[Math.floor(lon / 30)];
+  if (sign === undefined) throw new Error(`sign not found at lon ${lon}`);
+  switch (p) {
+    case Planet.Sun:
+      if (sign === Sign.Leo) return Dignity.Domicile;
+      if (sign === Sign.Aquarius) return Dignity.Detriment;
+      if (sign === Sign.Aries) return Dignity.Exaltation;
+      if (sign === Sign.Libra) return Dignity.Fall;
+      return;
+    case Planet.Moon:
+      if (sign === Sign.Cancer) return Dignity.Domicile;
+      if (sign === Sign.Capricorn) return Dignity.Detriment;
+      if (sign === Sign.Taurus) return Dignity.Exaltation;
+      if (sign === Sign.Scorpio) return Dignity.Fall;
+      return;
+    case Planet.Mercury:
+      if (sign === Sign.Gemini) return Dignity.Domicile;
+      if (sign === Sign.Sagittarius) return Dignity.Detriment;
+      if (sign === Sign.Virgo) return Dignity.Domicile;
+      if (sign === Sign.Pisces) return Dignity.Detriment;
+      return;
+    case Planet.Venus:
+      if (sign === Sign.Taurus||sign === Sign.Libra) return Dignity.Domicile;
+      if (sign === Sign.Scorpio || sign === Sign.Aries) return Dignity.Detriment;
+      if (sign === Sign.Pisces) return Dignity.Exaltation;
+      if (sign === Sign.Virgo) return Dignity.Fall;
+      return;
+    case Planet.Mars:
+      if (sign === Sign.Aries||sign === Sign.Scorpio) return Dignity.Domicile;
+      if (sign === Sign.Libra || sign === Sign.Taurus) return Dignity.Detriment;
+      if (sign === Sign.Capricorn) return Dignity.Exaltation;
+      if (sign === Sign.Cancer) return Dignity.Fall;
+      return;
+    case Planet.Jupiter:
+      if (sign === Sign.Sagittarius||sign === Sign.Pisces) return Dignity.Domicile;
+      if (sign === Sign.Gemini || sign === Sign.Virgo) return Dignity.Detriment;
+      if (sign === Sign.Cancer) return Dignity.Exaltation;
+      if (sign === Sign.Capricorn) return Dignity.Fall;
+      return;
+    case Planet.Saturn:
+      if (sign === Sign.Capricorn||sign === Sign.Aquarius) return Dignity.Domicile;
+      if (sign === Sign.Cancer || sign === Sign.Leo) return Dignity.Detriment;
+      if (sign === Sign.Libra) return Dignity.Exaltation;
+      if (sign === Sign.Aries) return Dignity.Fall;
+      return;
+  }
+}
+
 interface Astro {
   memory: WebAssembly.Memory;
   swe_utc_to_jd: (
