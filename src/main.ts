@@ -13,6 +13,8 @@ async function main() {
   const { innerWidth, innerHeight } = window;
   let v = Math.min(innerWidth, innerHeight);
   if (v > 600) v = 600;
+  if (v > innerHeight - 200) v = innerHeight - 210;
+  if (v > innerWidth - 10) v = innerWidth - 10;
   const width = v;
   const height = v;
   const radius = (v - 100) / 2;
@@ -189,7 +191,7 @@ async function main() {
     tableContainer.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
     tableContainer.style.zIndex = "1000";
     tableContainer.style.color = "#487297";
-    tableContainer.style.fontSize = "1.5rem";
+    tableContainer.style.fontSize = "1rem";
     tableContainer.style.display = "flex";
     tableContainer.style.justifyContent = "center";
     tableContainer.style.alignItems = "center";
@@ -207,7 +209,21 @@ async function main() {
         return;
       tableContainer.remove();
     };
+    // X button to close the table, floating
+    const xButton = document.createElement("button");
+    xButton.innerHTML = "X";
+    xButton.style.position = "absolute";
+    tableContainer.style.zIndex = "1001";
+    xButton.style.top = "0";
+    xButton.style.right = "0";
+    xButton.style.margin = "1rem";
+    xButton.style.color = "#487297";
+    xButton.style.fontSize = "1.5rem";
+    xButton.style.border = "none";
+    xButton.style.backgroundColor = "transparent";
+    xButton.onclick = () => tableContainer.remove();
     tableContainer.appendChild(table);
+    tableContainer.appendChild(xButton);
     document.body.appendChild(tableContainer);
   };
   const tableButtonContainer = document.createElement("div");

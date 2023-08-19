@@ -10,3 +10,5 @@ The code in this repository is licensed under MIT License
 ### Videos
 
 https://youtu.be/soL8nvKB7ko
+
+TODO: responsive on wide screen is hiding the buttons and so on
