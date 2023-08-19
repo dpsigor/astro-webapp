@@ -29,7 +29,6 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  max-height: 100vh;
   background-color: #1c1c1c;
 }
 
@@ -116,9 +115,14 @@ button:focus-visible {
   justify-content: space-between;
 }
 
-@media (max-width: 350px) {
-  .geo-container,
+@media (max-width: 530px) {
   .time-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 350px) {
+  .geo-container {
     flex-direction: column;
   }
 }
