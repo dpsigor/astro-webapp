@@ -40,8 +40,8 @@ jobs:
         run: mv ./astro.wasm ./dist
       - name: make assets folder
         run: mkdir -p dist/assets
-      - name: Move font from public to assets
-        run: mv ./public/Astrodotbasic-ow3Pd.ttf ./dist/assets
+      - name: Move font from public to root
+        run: mv ./public/Astrodotbasic-ow3Pd.ttf ./dist/
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact

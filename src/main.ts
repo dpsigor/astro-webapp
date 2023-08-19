@@ -15,6 +15,7 @@ async function main() {
   if (v > 600) v = 600;
   if (v > innerHeight - 200) v = innerHeight - 210;
   if (v > innerWidth - 10) v = innerWidth - 10;
+  if (v < 100) v = 102; // TODO: handle this better
   const width = v;
   const height = v;
   const radius = (v - 100) / 2;
@@ -239,4 +240,54 @@ async function main() {
   app.appendChild(tableButtonContainer);
 }
 
-main().catch((e) => console.error(e));
+const fonts = [
+  {
+    fontFamily: "glyphsFont",
+    fontStyle: "normal",
+    fontWeight: "400",
+    src: "./Astrodotbasic-ow3Pd.ttf",
+  },
+];
+
+async function loadFonts(
+  fontsToLoad: {
+    fontFamily: string;
+    fontStyle: string;
+    fontWeight: string;
+    src: string;
+  }[]
+) {
+  if (fontsToLoad.length) {
+    for (let i = 0; i < fontsToLoad.length; i++) {
+      let fontProps = fontsToLoad[i];
+      let fontFamily = fontProps.fontFamily;
+      let fontWeight = fontProps.fontWeight;
+      let fontStyle = fontProps.fontStyle;
+      let fontUrl = Array.isArray(fontProps["src"])
+        ? fontProps["src"][0][0]
+        : fontProps["src"];
+      if (fontUrl.indexOf("url(") === -1) {
+        fontUrl = "url(" + fontUrl + ")";
+      }
+      // let fontFormat = fontProps["src"][0][1] ? fontProps["src"][1] : "";
+      const font = new FontFace(fontFamily, fontUrl);
+      font.weight = fontWeight;
+      font.style = fontStyle;
+      await font.load();
+      document.fonts.add(font);
+      console.log(fontFamily, "loaded");
+      // apply font styles to body
+      let fontDOMEl = document.createElement("div");
+      fontDOMEl.textContent = "";
+      document.body.appendChild(fontDOMEl);
+      fontDOMEl.setAttribute(
+        "style",
+        `position:fixed; height:0; width:0; overflow:hidden; font-family:${fontFamily}; font-weight:${fontWeight}; font-style:${fontStyle}`
+      );
+    }
+  }
+}
+
+loadFonts(fonts).then(() => {
+  main().catch((e) => console.error(e));
+});

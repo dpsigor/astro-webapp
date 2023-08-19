@@ -228,7 +228,7 @@ export class Chart {
 
     // draw sign lines and write sign symbols
     {
-      this.ctx.font = "25px glyphsFont";
+      this.ctx.font = "20px glyphsFont";
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.textAlign = "center";
       this.ctx.strokeStyle = "#FFFFFF";
