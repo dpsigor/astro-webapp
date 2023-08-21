@@ -98,6 +98,11 @@ button:focus-visible {
   }
 }
 
+.mode-radio-container > label {
+  color: #646cff;
+  margin-left: 0.5rem;
+}
+
 .time-container {
   display: flex;
   justify-content: center;
@@ -115,6 +120,25 @@ button:focus-visible {
 .geo-container > div {
   display: flex;
   justify-content: space-between;
+}
+
+.eph-graph-form > input {
+  margin-right: 0.5rem;
+}
+
+.eph-graph-label {
+  font-family: glyphsFont;
+  font-size: 1.2rem;
+  color: #646cff;
+}
+
+.eph-graph-warning {
+  color: #cc2222;
+  margin: 0.2rem;
+}
+
+.eph-graph-checkboxes > label {
+  margin-left: 0.5rem;
 }
 
 @media (max-width: 530px) {

@@ -9,7 +9,7 @@ import {
   signGlyph,
 } from "./sweph";
 
-export interface Opts {
+export interface ChartCfg {
   date: Date;
   width: number;
   height: number;
@@ -41,7 +41,7 @@ export class Chart {
   constructor(
     private ctx: CanvasRenderingContext2D,
     private sweph: SwEph,
-    opts: Opts
+    opts: ChartCfg
   ) {
     this.date = opts.date;
     this.geolat = opts.geolat;
@@ -67,14 +67,16 @@ export class Chart {
     }
   }
 
-  render(opts: Partial<Opts>) {
-    if (opts.date) this.date = opts.date;
-    if (opts.geolat) this.geolat = opts.geolat;
-    if (opts.geolon) this.geolon = opts.geolon;
-    if (opts.width) this.width = opts.width;
-    if (opts.height) this.height = opts.height;
-    if (opts.radius) this.radius = opts.radius;
-    if (1 === 1) return;
+  setCfg(cfg: Partial<ChartCfg>) {
+    if (cfg.date) this.date = cfg.date;
+    if (cfg.width) this.width = cfg.width;
+    if (cfg.height) this.height = cfg.height;
+    if (cfg.radius) this.radius = cfg.radius;
+    if (cfg.geolat) this.geolat = cfg.geolat;
+    if (cfg.geolon) this.geolon = cfg.geolon;
+  }
+
+  render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     const { jd, err } = this.sweph.jd(this.date);
     if (err) throw err; // TODO: handle this error
