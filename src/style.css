@@ -26,7 +26,8 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  padding-top: 2rem;
+  /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
   background-color: #1c1c1c;
@@ -101,6 +102,7 @@ button:focus-visible {
   display: flex;
   justify-content: center;
   flex-direction: row;
+  margin-bottom: 0.5rem;
 }
 
 .geo-container {

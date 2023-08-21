@@ -13,6 +13,7 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "@bjorn3/browser_wasi_shim": "^0.2.14"
+    "@bjorn3/browser_wasi_shim": "^0.2.14",
+    "dayjs": "^1.11.9"
   }
 }

@@ -1,10 +1,32 @@
+import dayjs from "dayjs";
+import dayjstimezone from "dayjs/plugin/timezone";
+import dayjsutc from "dayjs/plugin/utc";
 import { Chart } from "./chart";
 import { loadFonts } from "./preloadfonts";
 import "./style.css";
 import { planetGlyph, planets, signGlyph, swephInit } from "./sweph";
 
+dayjs.extend(dayjsutc);
+dayjs.extend(dayjstimezone);
+
 const lskGeolat = "default.geolat";
 const lskGeolon = "default.geolon";
+const lskTime = "default.time";
+const lskTimezone = "default.timezone";
+
+function updateDateTz(date: Date, amdStr: string, timeStr: string, tz: string) {
+  if (!amdStr || !timeStr) return;
+  const [year, month, day] = amdStr.split("-").map(Number);
+  const [hour, minute] = timeStr.split(":").map(Number);
+  const d1 = dayjs.tz(`${year}-${month}-${day} ${hour}:${minute}`, tz).utc();
+  date.setUTCFullYear(d1.year());
+  date.setUTCMonth(d1.month());
+  date.setUTCDate(d1.date());
+  date.setUTCHours(d1.hour());
+  date.setUTCMinutes(d1.minute());
+  date.setUTCSeconds(d1.second());
+  localStorage.setItem(lskTime, date.valueOf().toString());
+}
 
 async function main() {
   const app = document.getElementById("app");
@@ -28,7 +50,16 @@ async function main() {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("No canvas context");
 
+  let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const lsTimezone = localStorage.getItem(lskTimezone);
+  if (lsTimezone) timezone = lsTimezone;
   const date = new Date();
+  const lsTime = parseInt(localStorage.getItem(lskTime) || "");
+  if (!Number.isNaN(lsTime)) {
+    date.setTime(lsTime);
+  } else {
+    localStorage.removeItem(lskTime);
+  }
 
   let geolon = -43 - 56 / 60;
   let geolat = -19 - 55 / 60;
@@ -48,32 +79,54 @@ async function main() {
   chart.render({});
 
   // time inputs
+  const dj = dayjs(date).tz(timezone);
   const timeContainer = document.createElement("div");
-  const calendarLabel = document.createElement("label");
-  calendarLabel.innerHTML = "UTC Time:";
-  calendarLabel.style.margin = "0 0.5rem";
-  calendarLabel.style.color = "#487297";
   const calendarInput = document.createElement("input");
   calendarInput.type = "date";
-  calendarInput.value = date.toISOString().slice(0, 10);
+  calendarInput.value = dj.format("YYYY-MM-DD");
   calendarInput.style.margin = "0 0.5rem";
   calendarInput.style.color = "#487297";
+
   const timeInput = document.createElement("input");
   timeInput.type = "time";
-  timeInput.value = date.toISOString().slice(11, 16);
+  timeInput.value = dj.format("HH:mm");
+  console.log(timeInput.value);
   timeInput.style.margin = "0 0.5rem";
   timeInput.style.color = "#487297";
-  timeContainer.append(calendarLabel, calendarInput, timeInput);
+
+  timeContainer.append(calendarInput, timeInput);
+
+  if (
+    Intl &&
+    Intl.DateTimeFormat() &&
+    Intl.DateTimeFormat().resolvedOptions() &&
+    (Intl as unknown as any).supportedValuesOf
+  ) {
+    const tzs = (Intl as unknown as any).supportedValuesOf("timeZone");
+    if (tzs && timezone) {
+      const tzSelect = document.createElement("select");
+      tzSelect.style.margin = "0 0.5rem";
+      tzSelect.style.color = "#487297";
+      tzSelect.onchange = () => {
+        timezone = tzSelect.value;
+        localStorage.setItem(lskTimezone, timezone);
+        updateDateTz(date, calendarInput.value, timeInput.value, timezone);
+        chart.render({ date });
+      };
+      tzs.forEach((tz: string) => {
+        const option = document.createElement("option");
+        option.value = tz;
+        option.innerHTML = tz;
+        if (tz === timezone) option.selected = true;
+        tzSelect.append(option);
+      });
+      timeContainer.append(tzSelect);
+    }
+  }
   timeContainer.classList.add("time-container");
   [calendarInput, timeInput].forEach((input) => {
     input.onchange = () => {
-      const [year, month, day] = calendarInput.value.split("-").map(Number);
-      const [hour, minute] = timeInput.value.split(":").map(Number);
-      date.setUTCFullYear(year);
-      date.setUTCMonth(month - 1);
-      date.setUTCDate(day);
-      date.setUTCHours(hour);
-      date.setUTCMinutes(minute);
+      updateDateTz(date, calendarInput.value, timeInput.value, timezone);
       chart.render({ date });
     };
   });
@@ -82,7 +135,7 @@ async function main() {
   const geoContainer = document.createElement("div");
   const latContainer = document.createElement("div");
   const latLabel = document.createElement("label");
-  latLabel.innerHTML = "Latitude";
+  latLabel.innerHTML = "Lat";
   latLabel.style.margin = "0 0.5rem";
   latLabel.style.color = "#487297";
   const latInput = document.createElement("input");
@@ -92,7 +145,7 @@ async function main() {
   latContainer.append(latLabel, latInput);
   const lonContainer = document.createElement("div");
   const lonLabel = document.createElement("label");
-  lonLabel.innerHTML = "Longitude";
+  lonLabel.innerHTML = "Lon";
   lonLabel.style.margin = "0 0.5rem";
   lonLabel.style.color = "#487297";
   const lonInput = document.createElement("input");
