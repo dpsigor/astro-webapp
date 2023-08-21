@@ -6,7 +6,7 @@ import { EphGraph } from "./eph_graph";
 import { ephGraphComponent } from "./ephgraph.component";
 import { loadFonts } from "./preloadfonts";
 import "./style.css";
-import { planets, swephInit } from "./sweph";
+import { swephInit } from "./sweph";
 
 async function main() {
   const app = document.getElementById("app");
