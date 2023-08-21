@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { Canvas } from "./canvas";
 import { Chart } from "./chart";
-import { signGlyph, planets, planetGlyph } from "./sweph";
+import { planets, signGlyphUnicode, planetGlyphUnicode } from "./sweph";
 import { updateDateTz } from "./dates";
 import { lskGeolat, lskGeolon, lskTimezone } from "./constants";
 
@@ -102,7 +102,7 @@ export function chartComponent(
   // button to show, in a floating div, the table of planetary positions
   const formatTableAngle = (angle: number) => {
     let deg = Math.floor(angle);
-    const sign = signGlyph[Math.floor(deg / 30)];
+    const sign = signGlyphUnicode[Math.floor(deg / 30)];
     const min = Math.floor((angle - deg) * 60);
     const sec = Math.floor(((angle - deg) * 60 - min) * 60);
     deg = deg % 30;
@@ -132,7 +132,7 @@ export function chartComponent(
     planets.forEach((planet) => {
       const tr = document.createElement("tr");
       const td1 = document.createElement("td");
-      td1.innerHTML = planetGlyph[planet];
+      td1.innerHTML = planetGlyphUnicode[planet];
       td1.style.border = "1px solid #487297";
       td1.style.padding = "0.5rem";
       const td2 = document.createElement("td");

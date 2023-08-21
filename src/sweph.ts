@@ -24,6 +24,21 @@ export const signGlyph = [
   "l",
 ];
 
+export const signGlyphUnicode = [
+  "♈︎",
+  "♉︎",
+  "♊︎",
+  "♋︎",
+  "♌︎",
+  "♍︎",
+  "♎︎",
+  "♏︎",
+  "♐︎",
+  "♑︎",
+  "♒︎",
+  "♓︎",
+];
+
 export enum HouseSystem {
   Placidus = "P".charCodeAt(0),
   Regiomontanus = "R".charCodeAt(0),
@@ -58,6 +73,16 @@ export const planetGlyph = {
   [Planet.Jupiter]: "F",
   [Planet.Saturn]: "G",
 };
+
+export const planetGlyphUnicode = {
+  [Planet.Sun]: "☉",
+  [Planet.Moon]: "☽",
+  [Planet.Mercury]: "☿",
+  [Planet.Venus]: "♀︎",
+  [Planet.Mars]: "♂︎",
+  [Planet.Jupiter]: "♃",
+  [Planet.Saturn]: "♄",
+}
 
 export enum Sign {
   Aries = 0,
