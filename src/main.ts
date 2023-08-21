@@ -4,7 +4,8 @@ import dayjsutc from "dayjs/plugin/utc";
 import { Chart } from "./chart";
 import { loadFonts } from "./preloadfonts";
 import "./style.css";
-import { planetGlyph, planets, signGlyph, swephInit } from "./sweph";
+import { Planet, planetGlyph, planets, signGlyph, swephInit } from "./sweph";
+import { EphGraph } from "./eph_graph";
 
 dayjs.extend(dayjsutc);
 dayjs.extend(dayjstimezone);
@@ -90,7 +91,6 @@ async function main() {
   const timeInput = document.createElement("input");
   timeInput.type = "time";
   timeInput.value = dj.format("HH:mm");
-  console.log(timeInput.value);
   timeInput.style.margin = "0 0.5rem";
   timeInput.style.color = "#487297";
 
@@ -170,7 +170,6 @@ async function main() {
     let deg = Math.floor(angle);
     const sign = signGlyph[Math.floor(deg / 30)];
     const min = Math.floor((angle - deg) * 60);
-    console.log(min);
     const sec = Math.floor(((angle - deg) * 60 - min) * 60);
     deg = deg % 30;
     return `${sign} ${deg}° ${min}' ${sec}"`;
@@ -289,6 +288,23 @@ async function main() {
   app.appendChild(geoContainer);
   app.appendChild(canvas);
   app.appendChild(tableButtonContainer);
+
+  const d1 = new Date();
+  const d2 = new Date();
+  d2.setFullYear(d2.getFullYear() + 2);
+  const ephGraph = new EphGraph(ctx, sweph, {
+    planet: Planet.Mercury,
+    height,
+    width,
+    radius,
+    range: [d1, d2],
+  });
+  ephGraph.render();
+
+  // moving mouse on the canvas, show the description of the point
+  canvas.addEventListener("mousemove", (ev) => {
+    ephGraph.pointDescription(ev.offsetX, ev.offsetY);
+  })
 }
 
 loadFonts().then(() => {
