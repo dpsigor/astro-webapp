@@ -9,7 +9,7 @@ import {
   signGlyph,
 } from "./sweph";
 
-export interface Opts {
+export interface ChartCfg {
   date: Date;
   width: number;
   height: number;
@@ -41,7 +41,7 @@ export class Chart {
   constructor(
     private ctx: CanvasRenderingContext2D,
     private sweph: SwEph,
-    opts: Opts
+    opts: ChartCfg
   ) {
     this.date = opts.date;
     this.geolat = opts.geolat;
@@ -67,13 +67,16 @@ export class Chart {
     }
   }
 
-  render(opts: Partial<Opts>) {
-    if (opts.date) this.date = opts.date;
-    if (opts.geolat) this.geolat = opts.geolat;
-    if (opts.geolon) this.geolon = opts.geolon;
-    if (opts.width) this.width = opts.width;
-    if (opts.height) this.height = opts.height;
-    if (opts.radius) this.radius = opts.radius;
+  setCfg(cfg: Partial<ChartCfg>) {
+    if (cfg.date) this.date = cfg.date;
+    if (cfg.width) this.width = cfg.width;
+    if (cfg.height) this.height = cfg.height;
+    if (cfg.radius) this.radius = cfg.radius;
+    if (cfg.geolat) this.geolat = cfg.geolat;
+    if (cfg.geolon) this.geolon = cfg.geolon;
+  }
+
+  render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     const { jd, err } = this.sweph.jd(this.date);
     if (err) throw err; // TODO: handle this error
@@ -147,7 +150,7 @@ export class Chart {
         metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
       const radiusPlanets = this.radius + 20;
       for (const planet of planets) {
-        const sign = planetGlyph[planet];
+        const glyph = planetGlyph[planet];
         const { lon, slon, err } = this.sweph.planetPos(jd, planet);
         if (err) throw err;
         this.ctx.fillStyle = this.dignityColor(dignity(planet, lon));
@@ -155,7 +158,7 @@ export class Chart {
         const x = this.width / 2 + radiusPlanets * Math.cos(rads);
         let y = this.height / 2 + radiusPlanets * Math.sin(rads);
         this.planetPositions.set(planet, { x, y, rads, lon, slon });
-        this.ctx.fillText(sign, x, y + fontHeight / 4);
+        this.ctx.fillText(glyph, x, y + fontHeight / 4);
         // if retrograde, write an R
         if (slon < 0) {
           this.ctx.textAlign = "left";
