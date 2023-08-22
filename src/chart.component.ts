@@ -45,7 +45,7 @@ export function chartComponent(
         timezone = tzSelect.value;
         localStorage.setItem(lskTimezone, timezone);
         updateDateTz(date, calendarInput.value, timeInput.value, timezone);
-        canvasApp.setCfg({ chart: { date } });
+        canvasApp.setCfg({ chart: { date }, render: "chart" });
       };
       tzs.forEach((tz: string) => {
         const option = document.createElement("option");
@@ -61,7 +61,7 @@ export function chartComponent(
   [calendarInput, timeInput].forEach((input) => {
     input.onchange = () => {
       updateDateTz(date, calendarInput.value, timeInput.value, timezone);
-      canvasApp.setCfg({ chart: { date } });
+      canvasApp.setCfg({ chart: { date }, render: "chart" });
     };
   });
 
@@ -219,4 +219,3 @@ export function chartComponent(
 
   return { timeContainer, geoContainer, tableButtonContainer };
 }
-
