@@ -1,47 +1,47 @@
-import { WASI, File, OpenFile } from "@bjorn3/browser_wasi_shim";
+import { WASI, File, OpenFile } from '@bjorn3/browser_wasi_shim';
 
 export const nodeGlyphs = [
-  "L", // north
-  "M",
+  'L', // north
+  'M',
 ];
 
-export const partFortuneGlyph = 'O'
-export const ACGlyph = 'P'
-export const MCGlyph = 'Q'
+export const partFortuneGlyph = 'O';
+export const ACGlyph = 'P';
+export const MCGlyph = 'Q';
 
 export const signGlyph = [
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
+  'a',
+  'b',
+  'c',
+  'd',
+  'e',
+  'f',
+  'g',
+  'h',
+  'i',
+  'j',
+  'k',
+  'l',
 ];
 
 export const signGlyphUnicode = [
-  "♈︎",
-  "♉︎",
-  "♊︎",
-  "♋︎",
-  "♌︎",
-  "♍︎",
-  "♎︎",
-  "♏︎",
-  "♐︎",
-  "♑︎",
-  "♒︎",
-  "♓︎",
+  '♈︎',
+  '♉︎',
+  '♊︎',
+  '♋︎',
+  '♌︎',
+  '♍︎',
+  '♎︎',
+  '♏︎',
+  '♐︎',
+  '♑︎',
+  '♒︎',
+  '♓︎',
 ];
 
 export enum HouseSystem {
-  Placidus = "P".charCodeAt(0),
-  Regiomontanus = "R".charCodeAt(0),
+  Placidus = 'P'.charCodeAt(0),
+  Regiomontanus = 'R'.charCodeAt(0),
 }
 
 export enum Planet {
@@ -65,24 +65,24 @@ export const planets = [
 ];
 
 export const planetGlyph = {
-  [Planet.Sun]: "A",
-  [Planet.Moon]: "B",
-  [Planet.Mercury]: "C",
-  [Planet.Venus]: "D",
-  [Planet.Mars]: "E",
-  [Planet.Jupiter]: "F",
-  [Planet.Saturn]: "G",
+  [Planet.Sun]: 'A',
+  [Planet.Moon]: 'B',
+  [Planet.Mercury]: 'C',
+  [Planet.Venus]: 'D',
+  [Planet.Mars]: 'E',
+  [Planet.Jupiter]: 'F',
+  [Planet.Saturn]: 'G',
 };
 
 export const planetGlyphUnicode = {
-  [Planet.Sun]: "☉",
-  [Planet.Moon]: "☽",
-  [Planet.Mercury]: "☿",
-  [Planet.Venus]: "♀︎",
-  [Planet.Mars]: "♂︎",
-  [Planet.Jupiter]: "♃",
-  [Planet.Saturn]: "♄",
-}
+  [Planet.Sun]: '☉',
+  [Planet.Moon]: '☽',
+  [Planet.Mercury]: '☿',
+  [Planet.Venus]: '♀︎',
+  [Planet.Mars]: '♂︎',
+  [Planet.Jupiter]: '♃',
+  [Planet.Saturn]: '♄',
+};
 
 export enum Sign {
   Aries = 0,
@@ -100,19 +100,19 @@ export enum Sign {
 }
 
 export const signs = [
-  Sign.Aries ,
-  Sign.Taurus ,
-  Sign.Gemini ,
-  Sign.Cancer ,
-  Sign.Leo ,
-  Sign.Virgo ,
-  Sign.Libra ,
-  Sign.Scorpio ,
-  Sign.Sagittarius ,
-  Sign.Capricorn ,
-  Sign.Aquarius ,
-  Sign.Pisces ,
-]
+  Sign.Aries,
+  Sign.Taurus,
+  Sign.Gemini,
+  Sign.Cancer,
+  Sign.Leo,
+  Sign.Virgo,
+  Sign.Libra,
+  Sign.Scorpio,
+  Sign.Sagittarius,
+  Sign.Capricorn,
+  Sign.Aquarius,
+  Sign.Pisces,
+];
 
 export enum Dignity {
   Domicile = 1,
@@ -144,25 +144,28 @@ export function dignity(p: Planet, lon: number): Dignity | undefined {
       if (sign === Sign.Pisces) return Dignity.Detriment;
       return;
     case Planet.Venus:
-      if (sign === Sign.Taurus||sign === Sign.Libra) return Dignity.Domicile;
-      if (sign === Sign.Scorpio || sign === Sign.Aries) return Dignity.Detriment;
+      if (sign === Sign.Taurus || sign === Sign.Libra) return Dignity.Domicile;
+      if (sign === Sign.Scorpio || sign === Sign.Aries)
+        return Dignity.Detriment;
       if (sign === Sign.Pisces) return Dignity.Exaltation;
       if (sign === Sign.Virgo) return Dignity.Fall;
       return;
     case Planet.Mars:
-      if (sign === Sign.Aries||sign === Sign.Scorpio) return Dignity.Domicile;
+      if (sign === Sign.Aries || sign === Sign.Scorpio) return Dignity.Domicile;
       if (sign === Sign.Libra || sign === Sign.Taurus) return Dignity.Detriment;
       if (sign === Sign.Capricorn) return Dignity.Exaltation;
       if (sign === Sign.Cancer) return Dignity.Fall;
       return;
     case Planet.Jupiter:
-      if (sign === Sign.Sagittarius||sign === Sign.Pisces) return Dignity.Domicile;
+      if (sign === Sign.Sagittarius || sign === Sign.Pisces)
+        return Dignity.Domicile;
       if (sign === Sign.Gemini || sign === Sign.Virgo) return Dignity.Detriment;
       if (sign === Sign.Cancer) return Dignity.Exaltation;
       if (sign === Sign.Capricorn) return Dignity.Fall;
       return;
     case Planet.Saturn:
-      if (sign === Sign.Capricorn||sign === Sign.Aquarius) return Dignity.Domicile;
+      if (sign === Sign.Capricorn || sign === Sign.Aquarius)
+        return Dignity.Domicile;
       if (sign === Sign.Cancer || sign === Sign.Leo) return Dignity.Detriment;
       if (sign === Sign.Libra) return Dignity.Exaltation;
       if (sign === Sign.Aries) return Dignity.Fall;
@@ -181,14 +184,14 @@ interface Astro {
     second: number,
     gregflag: number,
     dret: number, // Float64Array, idx1 = universal time
-    serr: number // Uint8Array
+    serr: number, // Uint8Array
   ) => number;
   swe_calc_ut: (
     tjd_ut: number,
     ipl: number,
     iflag: number,
     xxPtr: number,
-    serrPtr: number
+    serrPtr: number,
   ) => number;
   swe_houses: (
     tjd_ut: number,
@@ -196,7 +199,7 @@ interface Astro {
     lon: number,
     hsys: number,
     cuspPtr: number, // Float64Array, houses at indexes 1..12
-    ascmcPtr: number
+    ascmcPtr: number,
   ) => number;
 }
 
@@ -222,7 +225,7 @@ export class SwEph {
       second,
       gregflag,
       dretPtr,
-      serrPtr
+      serrPtr,
     );
     if (jdCode < 0) {
       const serr = new Uint8Array(this.astro.memory.buffer, serrPtr, 256);
@@ -234,7 +237,7 @@ export class SwEph {
 
   planetPos(
     jd: number,
-    planet: Planet
+    planet: Planet,
   ): { lon: number; slon: number; err?: string } {
     const iflag = 128; // no flags
     const xxPtr = 0;
@@ -273,7 +276,7 @@ export async function swephInit(): Promise<SwEph> {
   ];
   const wasi = new WASI(args, env, fds);
 
-  const wasm = await WebAssembly.compileStreaming(fetch("astro.wasm"));
+  const wasm = await WebAssembly.compileStreaming(fetch('astro.wasm'));
   const inst = await WebAssembly.instantiate(wasm, {
     wasi_snapshot_preview1: wasi.wasiImport,
   });

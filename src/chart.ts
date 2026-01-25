@@ -7,7 +7,7 @@ import {
   planetGlyph,
   planets,
   signGlyph,
-} from "./sweph";
+} from './sweph';
 
 export interface ChartCfg {
   date: Date;
@@ -41,7 +41,7 @@ export class Chart {
   constructor(
     private ctx: CanvasRenderingContext2D,
     private sweph: SwEph,
-    opts: ChartCfg
+    opts: ChartCfg,
   ) {
     this.date = opts.date;
     this.geolat = opts.geolat;
@@ -52,16 +52,16 @@ export class Chart {
   }
 
   private dignityColor(d?: Dignity) {
-    if (!d) return "#00CCFF";
+    if (!d) return '#00CCFF';
     switch (d) {
       case Dignity.Domicile:
-        return "#00FF00";
+        return '#00FF00';
       case Dignity.Exaltation:
-        return "#FFFF00";
+        return '#FFFF00';
       case Dignity.Fall:
-        return "#CD5C5C";
+        return '#CD5C5C';
       case Dignity.Detriment:
-        return "#FF0000";
+        return '#FF0000';
       default:
         throw new Error(`Unknown dignity: ${d}`);
     }
@@ -80,7 +80,7 @@ export class Chart {
     this.ctx.clearRect(0, 0, this.width, this.height);
     const { jd, err } = this.sweph.jd(this.date);
     if (err) throw err; // TODO: handle this error
-    this.ctx.strokeStyle = "#FFFFFF";
+    this.ctx.strokeStyle = '#FFFFFF';
     this.ctx.beginPath();
     this.ctx.arc(this.width / 2, this.height / 2, this.radius, 0, 2 * Math.PI);
     this.ctx.stroke();
@@ -89,7 +89,7 @@ export class Chart {
       jd,
       this.geolat,
       this.geolon,
-      HouseSystem.Placidus
+      HouseSystem.Placidus,
     );
     this.houses = houses;
 
@@ -104,7 +104,7 @@ export class Chart {
         this.height / 2,
         innerCircleRadius,
         0,
-        2 * Math.PI
+        2 * Math.PI,
       );
       this.ctx.lineWidth = 3;
       this.ctx.stroke();
@@ -143,9 +143,9 @@ export class Chart {
 
     // write planets
     {
-      this.ctx.font = "20px glyphsFont";
-      this.ctx.textAlign = "center";
-      const metrics = this.ctx.measureText("M");
+      this.ctx.font = '20px glyphsFont';
+      this.ctx.textAlign = 'center';
+      const metrics = this.ctx.measureText('M');
       const fontHeight =
         metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
       const radiusPlanets = this.radius + 20;
@@ -161,15 +161,15 @@ export class Chart {
         this.ctx.fillText(glyph, x, y + fontHeight / 4);
         // if retrograde, write an R
         if (slon < 0) {
-          this.ctx.textAlign = "left";
-          this.ctx.font = "10px Arial";
+          this.ctx.textAlign = 'left';
+          this.ctx.font = '10px Arial';
           this.ctx.fillText(
-            "R",
+            'R',
             x + metrics.width / 2,
-            y - metrics.fontBoundingBoxAscent / 2
+            y - metrics.fontBoundingBoxAscent / 2,
           );
-          this.ctx.font = "20px glyphsFont";
-          this.ctx.textAlign = "center";
+          this.ctx.font = '20px glyphsFont';
+          this.ctx.textAlign = 'center';
         }
         // small line from the planet to the circle
         const x0 = this.width / 2 + this.radius * Math.cos(rads);
@@ -183,7 +183,7 @@ export class Chart {
           y1 = y0 + (y1 - y0) * ftr;
         }
         this.ctx.beginPath();
-        this.ctx.strokeStyle = "#00CCFF";
+        this.ctx.strokeStyle = '#00CCFF';
         this.ctx.moveTo(x0, y0);
         this.ctx.lineTo(x1, y1);
         this.ctx.stroke();
@@ -204,33 +204,33 @@ export class Chart {
           const p1sign = Math.floor(p1.lon / 30);
           const p2sign = Math.floor(p2.lon / 30);
           const orb = 5;
-          let color = "";
+          let color = '';
           if (p1sign === p2sign && angle < orb /* conjunct*/) {
-            color = "#FFFF00";
+            color = '#FFFF00';
           } else if (
             !(((p1sign - p2sign) % 2) /* sextile*/) &&
             ((angle > 60 - orb && angle < 60 + orb) ||
               (angle > 300 - orb && angle < 300 + orb))
           ) {
-            color = "#00FFFF";
+            color = '#00FFFF';
           } else if (
             !(((p1sign - p2sign) % 3) /* square*/) &&
             ((angle > 90 - orb && angle < 90 + orb) ||
               (angle > 270 - orb && angle < 270 + orb))
           ) {
-            color = "#FF0000";
+            color = '#FF0000';
           } else if (
             !(((p1sign - p2sign) % 4) /* trine*/) &&
             ((angle > 120 - orb && angle < 120 + orb) ||
               (angle > 240 - orb && angle < 240 + orb))
           ) {
-            color = "#00FF00";
+            color = '#00FF00';
           } else if (
             !(((p1sign - p2sign) % 6) /* opposition*/) &&
             angle > 180 - orb &&
             angle < 180 + orb
           ) {
-            color = "#FF00FF";
+            color = '#FF00FF';
           }
           if (!color) continue;
           this.ctx.beginPath();
@@ -248,11 +248,11 @@ export class Chart {
 
     // draw sign lines and write sign symbols
     {
-      this.ctx.font = "20px glyphsFont";
-      this.ctx.fillStyle = "#FFFFFF";
-      this.ctx.textAlign = "center";
-      this.ctx.strokeStyle = "#FFFFFF";
-      const metrics = this.ctx.measureText("M");
+      this.ctx.font = '20px glyphsFont';
+      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.textAlign = 'center';
+      this.ctx.strokeStyle = '#FFFFFF';
+      const metrics = this.ctx.measureText('M');
       const fontHeight =
         metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
       const radiusSign = this.radius + 40;

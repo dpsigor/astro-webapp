@@ -1,4 +1,4 @@
-import { Planet, SwEph, signGlyph } from "./sweph";
+import { Planet, SwEph, signGlyph } from './sweph';
 
 export interface EphGraphConfig {
   range: [Date, Date];
@@ -10,13 +10,13 @@ export interface EphGraphConfig {
 
 export class EphGraph {
   colors: Map<Planet, string> = new Map([
-    [Planet.Sun, "#FFA500"],
-    [Planet.Moon, "#5555FF"],
-    [Planet.Mercury, "#AAAAAA"],
-    [Planet.Venus, "#00CCFF"],
-    [Planet.Mars, "#AA0000"],
-    [Planet.Jupiter, "#FFFF00"],
-    [Planet.Saturn, "#800080"],
+    [Planet.Sun, '#FFA500'],
+    [Planet.Moon, '#5555FF'],
+    [Planet.Mercury, '#AAAAAA'],
+    [Planet.Venus, '#00CCFF'],
+    [Planet.Mars, '#AA0000'],
+    [Planet.Jupiter, '#FFFF00'],
+    [Planet.Saturn, '#800080'],
   ]);
   pts = new Map<number, [[number, number], Date, number, string][]>();
   hasDescription = false;
@@ -24,7 +24,7 @@ export class EphGraph {
   constructor(
     private ctx: CanvasRenderingContext2D,
     private sweph: SwEph,
-    private cfg: EphGraphConfig
+    private cfg: EphGraphConfig,
   ) {}
 
   setCfg(cfg: Partial<EphGraphConfig>) {
@@ -53,7 +53,7 @@ export class EphGraph {
 
     const [[pX, pY], time, lon] = points[0];
 
-    this.ctx.strokeStyle = "#00CCCC";
+    this.ctx.strokeStyle = '#00CCCC';
     this.ctx.beginPath();
     this.ctx.arc(pX, pY, 4, 0, 2 * Math.PI);
     this.ctx.closePath();
@@ -67,15 +67,15 @@ export class EphGraph {
     if (x0 + 75 > this.cfg.width) {
       x0 = x - w - pad;
     }
-    this.ctx.fillStyle = "#FFFFFF";
-    this.ctx.strokeStyle = "#FFFFFF";
+    this.ctx.fillStyle = '#FFFFFF';
+    this.ctx.strokeStyle = '#FFFFFF';
     this.ctx.fillRect(x0, y0, w, h);
     this.ctx.strokeRect(x0, y0, w, h);
-    this.ctx.fillStyle = "#000000";
-    this.ctx.textAlign = "left";
-    this.ctx.font = "20px glyphsFont";
+    this.ctx.fillStyle = '#000000';
+    this.ctx.textAlign = 'left';
+    this.ctx.font = '20px glyphsFont';
     this.ctx.fillText(signGlyph[Math.floor(lon / 30)], x0 + 2, y0 + 2 + 12);
-    this.ctx.font = "12px Arial";
+    this.ctx.font = '12px Arial';
     const fullAng = lon % 30;
     const ang = Math.floor(fullAng);
     const min = Math.floor((fullAng - ang) * 60);
@@ -97,19 +97,19 @@ export class EphGraph {
     const pad = 20;
     const originX = pad;
     const originY = this.cfg.height - pad;
-    this.ctx.fillStyle = "#FFFFFF";
-    this.ctx.strokeStyle = "#FFFFFF";
+    this.ctx.fillStyle = '#FFFFFF';
+    this.ctx.strokeStyle = '#FFFFFF';
     this.ctx.moveTo(originX, originY);
     this.ctx.lineTo(originX, pad);
     this.ctx.moveTo(originX, originY);
     this.ctx.lineTo(this.cfg.width - pad, originY);
     this.ctx.stroke();
 
-    this.ctx.font = "12px sans-serif";
-    this.ctx.textAlign = "right";
-    this.ctx.fillText("Time", this.cfg.width - pad, originY + pad);
-    this.ctx.textAlign = "left";
-    this.ctx.fillText("Angle", originX - pad, pad / 2);
+    this.ctx.font = '12px sans-serif';
+    this.ctx.textAlign = 'right';
+    this.ctx.fillText('Time', this.cfg.width - pad, originY + pad);
+    this.ctx.textAlign = 'left';
+    this.ctx.fillText('Angle', originX - pad, pad / 2);
 
     const args = this.cfg.planets.map((planet) => {
       const color = this.colors.get(planet);

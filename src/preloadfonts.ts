@@ -1,10 +1,10 @@
 export async function loadFonts() {
   const fonts = [
     {
-      fontFamily: "glyphsFont",
-      fontStyle: "normal",
-      fontWeight: "400",
-      src: "./Astrodotbasic-ow3Pd.ttf",
+      fontFamily: 'glyphsFont',
+      fontStyle: 'normal',
+      fontWeight: '400',
+      src: './Astrodotbasic-ow3Pd.ttf',
     },
   ];
 
@@ -13,11 +13,11 @@ export async function loadFonts() {
     let fontFamily = fontProps.fontFamily;
     let fontWeight = fontProps.fontWeight;
     let fontStyle = fontProps.fontStyle;
-    let fontUrl = Array.isArray(fontProps["src"])
-      ? fontProps["src"][0][0]
-      : fontProps["src"];
-    if (fontUrl.indexOf("url(") === -1) {
-      fontUrl = "url(" + fontUrl + ")";
+    let fontUrl = Array.isArray(fontProps['src'])
+      ? fontProps['src'][0][0]
+      : fontProps['src'];
+    if (fontUrl.indexOf('url(') === -1) {
+      fontUrl = 'url(' + fontUrl + ')';
     }
     // let fontFormat = fontProps["src"][0][1] ? fontProps["src"][1] : "";
     const font = new FontFace(fontFamily, fontUrl);
@@ -26,12 +26,12 @@ export async function loadFonts() {
     await font.load();
     document.fonts.add(font);
     // apply font styles to body
-    let fontDOMEl = document.createElement("div");
-    fontDOMEl.textContent = "";
+    let fontDOMEl = document.createElement('div');
+    fontDOMEl.textContent = '';
     document.body.appendChild(fontDOMEl);
     fontDOMEl.setAttribute(
-      "style",
-      `position:fixed; height:0; width:0; overflow:hidden; font-family:${fontFamily}; font-weight:${fontWeight}; font-style:${fontStyle}`
+      'style',
+      `position:fixed; height:0; width:0; overflow:hidden; font-family:${fontFamily}; font-weight:${fontWeight}; font-style:${fontStyle}`,
     );
   }
 }
