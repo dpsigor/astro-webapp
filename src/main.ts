@@ -76,7 +76,7 @@ async function main() {
   });
 
   const canvasApp = new Canvas(chart, ephGraph);
-  canvasApp.setCfg({ render: 'ephGraph' });
+  canvasApp.setCfg({ render: 'chart' });
 
   const { timeContainer, geoContainer, tableButtonContainer } = chartComponent(
     canvasApp,

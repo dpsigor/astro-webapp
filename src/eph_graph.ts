@@ -1,5 +1,7 @@
 import { Planet, SwEph, signGlyph } from './sweph';
 
+const STEPS = 200;
+
 export interface EphGraphConfig {
   range: [Date, Date];
   planets: Planet[];
@@ -119,7 +121,7 @@ export class EphGraph {
     if (!noNewCfg) {
       this.pts.clear();
       for (const { planet, color } of args) {
-        const n = 200;
+        const n = STEPS;
         const step = (this.cfg.width - 2 * pad) / n;
         const t0 = this.cfg.range[0].getTime();
         const t1 = this.cfg.range[1].getTime();
