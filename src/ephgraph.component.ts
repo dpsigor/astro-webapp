@@ -1,12 +1,14 @@
+import { Observable } from 'rxjs';
+import { type Ephemeris } from './ephemeris.service';
 import { Canvas } from './canvas';
 import { Planet, planetGlyph, planets } from './sweph';
-import { EphemerisService } from './ephemeris.service';
+import { EphTable } from './eph-table.component';
 
 export function ephGraphComponent(
   canvasApp: Canvas,
   d1: Date,
   d2: Date,
-  ephService: EphemerisService,
+  ephs: Observable<Ephemeris>,
 ) {
   // ephemeris graph form
   const ephGrphContainer = document.createElement('div');
@@ -20,6 +22,9 @@ export function ephGraphComponent(
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.checked = false;
+    canvasApp.ephGraphPlanetCheckedSubj(p).subscribe((checked) => {
+      input.checked = checked;
+    })
     input.id = `eph-graph-${p}-checkbox`;
     const label = document.createElement('label');
     label.classList.add('eph-graph-label');
@@ -42,7 +47,6 @@ export function ephGraphComponent(
         ephGraph: { planets },
         render: 'ephGraph',
       });
-      ephService.setPlanets(new Set(planets));
     };
     planetCheckboxesContainer.append(label, input);
   });
@@ -75,6 +79,10 @@ export function ephGraphComponent(
 
   const ephTableContainer = document.createElement('div');
   ephTableContainer.id = 'eph-table-container';
+  const ephTableComponent = new EphTable(
+    ephs,
+    ephTableContainer,
+  );
 
-  return { ephGrphContainer, ephTableContainer };
+  return { ephGrphContainer, ephTableContainer, ephTableComponent };
 }

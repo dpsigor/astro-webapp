@@ -1,5 +1,9 @@
-import { Planet, SwEph, signGlyph } from './sweph';
+import { z } from 'zod';
+import { BehaviorSubject } from 'rxjs';
+import { Planet, SwEph, signGlyph, planets } from './sweph';
+import { EphemerisService } from './ephemeris.service';
 
+const EPHGRAPH_KEY = 'ephGraphCfg';
 const STEPS = 200;
 
 export interface EphGraphConfig {
@@ -22,19 +26,66 @@ export class EphGraph {
   ]);
   pts = new Map<number, [[number, number], Date, number, string][]>();
   hasDescription = false;
+  private planetCheckedSubjs = planets.reduce((acc, planet) => {
+    acc[planet] = new BehaviorSubject(false);
+    return acc;
+  }, {} as Record<Planet, BehaviorSubject<boolean>>);
 
   constructor(
     private ctx: CanvasRenderingContext2D,
     private sweph: SwEph,
     private cfg: EphGraphConfig,
+    private ephemerisSvc: EphemerisService,
   ) {}
 
   setCfg(cfg: Partial<EphGraphConfig>) {
-    if (cfg.range) this.cfg.range = cfg.range;
-    if (cfg.planets) this.cfg.planets = cfg.planets;
+    if (cfg.range) {
+      this.cfg.range = cfg.range;
+    }
+    if (cfg.planets) {
+      this.cfg.planets = cfg.planets;
+      for (const planet of planets) {
+        const checked = cfg.planets.includes(planet);
+        this.planetCheckedSubjs[planet].next(checked);
+      }
+    }
+    if (cfg.range || cfg.planets) {
+      this.ephemerisSvc.setFullCfg(cfg)
+    }
     if (cfg.width) this.cfg.width = cfg.width;
     if (cfg.height) this.cfg.height = cfg.height;
     if (cfg.radius) this.cfg.radius = cfg.radius;
+    localStorage.setItem(EPHGRAPH_KEY, JSON.stringify(this.cfg));
+  }
+
+  loadCfg() {
+    const cached = localStorage.getItem(EPHGRAPH_KEY);
+    if (!cached) return;
+    try {
+      const parsed = JSON.parse(cached);
+      const cfg = z.object({
+        range: z.tuple([z.string(), z.string()]),
+        planets: z.array(z.number()),
+        width: z.number(),
+        height: z.number(),
+        radius: z.number(),
+      }).parse(parsed);
+      const dateRange: [Date, Date] = [new Date(cfg.range[0]), new Date(cfg.range[1])];
+      if (dateRange[0] >= dateRange[1] || isNaN(dateRange[0].getTime()) || isNaN(dateRange[1].getTime())) {
+        return
+      }
+      this.setCfg({
+        ...cfg,
+        range: dateRange,
+      });
+    } catch (e) {
+      console.error('Failed to parse cached eph graph config', e);
+      localStorage.removeItem(EPHGRAPH_KEY);
+    }
+  }
+
+  getPlanetCheckedSubj(planet: Planet): BehaviorSubject<boolean> {
+    return this.planetCheckedSubjs[planet];
   }
 
   // pointDescription displays on a floating square the date and angle of the

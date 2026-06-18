@@ -6,7 +6,10 @@ import { formatTableAngle } from './text';
 export class EphTable {
   private subs: Subscription | null = null;
 
-  constructor(private ephs: Observable<Ephemeris>) {}
+  constructor(
+    private ephs: Observable<Ephemeris>,
+    private container: HTMLElement,
+  ) {}
 
   onInit() {
     this.subs = this.ephs.subscribe((eph) => {
@@ -18,7 +21,7 @@ export class EphTable {
     const table = document.createElement('table');
     table.style.color = 'white';
     const headers = document.createElement('tr');
-    ['Date/Time', 'A', 'B', 'Angle'].forEach((col) => {
+    ['Date', 'A', 'B', 'Angle'].forEach((col) => {
       const h = document.createElement('th');
       h.innerText = col;
       headers.appendChild(h);
@@ -27,7 +30,7 @@ export class EphTable {
     eph.events.forEach(({ time, a, b, angle }) => {
       const row = document.createElement('tr');
       const dateCell = document.createElement('td');
-      dateCell.innerText = time.toISOString();
+      dateCell.innerText = time.toISOString().slice(0, 10);
       const aCell = document.createElement('td');
       aCell.innerText = planetGlyphUnicode[a];
       const bCell = document.createElement('td');
@@ -40,11 +43,8 @@ export class EphTable {
       row.appendChild(angleCell);
       table.appendChild(row);
     });
-    const container = document.getElementById('eph-table-container');
-    if (container) {
-      container.innerHTML = '';
-      container.appendChild(table);
-    }
+    this.container.innerHTML = '';
+    this.container.appendChild(table);
   }
 
   onDestroy() {

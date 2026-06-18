@@ -17,6 +17,7 @@
   "dependencies": {
     "@bjorn3/browser_wasi_shim": "^0.2.14",
     "dayjs": "^1.11.9",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "zod": "^4.4.3"
   }
 }

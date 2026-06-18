@@ -1,8 +1,8 @@
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SwEph, Planet } from './sweph';
 
-const HALF_DAY_MS = 1000 * 60 * 60 * 12;
-const MAX_PRECOMPUTE_ITERATIONS = 10000;
+const STEP_MS = 1000 * 60 * 60 * 4;
+const MAX_PRECOMPUTE_ITERATIONS = 365 * 4 + 1; // 2 years
 
 type EphemerisEvent = {
   time: Date;
@@ -16,41 +16,53 @@ export type Ephemeris = {
 };
 
 export class EphemerisService {
-  private planets = new BehaviorSubject<Set<Planet>>(new Set<Planet>([]));
-  private dateRange = new BehaviorSubject<{ start: Date; end: Date }>({
+  private cfg: {
+    planets: Set<Planet>;
+    start: Date;
+    end: Date;
+  } = {
+    planets: new Set(),
     start: new Date(),
     end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 60),
-  });
+  };
 
   constructor(
     private sweph: SwEph,
     private ephs: Subject<Ephemeris>,
-  ) {
-    this.planets.subscribe(() => {
-      this.reevaluate();
-    });
-    this.dateRange.subscribe(() => {
-      this.reevaluate();
-    });
+  ) {}
+
+  setFullCfg(cfg: { planets?: Planet[]; range?: [Date, Date] }) {
+    if (!cfg.range) {
+      cfg.range = [this.cfg.start, this.cfg.end];
+    }
+    if (!cfg.planets) cfg.planets = Array.from(this.cfg.planets);
+    if (cfg.planets.sort().join(',') === Array.from(this.cfg.planets).sort().join(',')) {
+      cfg.planets = undefined;
+    }
+    if (cfg.range[0].getTime() === this.cfg.start.getTime() &&
+      cfg.range[1].getTime() === this.cfg.end.getTime()) {
+      cfg.range = undefined;
+    }
+    if (!cfg.planets && !cfg.range) {
+      return
+    }
+    if (cfg.planets) {
+      this.cfg.planets = new Set(cfg.planets);
+    }
+    if (cfg.range) {
+      this.cfg.start = cfg.range[0];
+      this.cfg.end = cfg.range[1];
+    }
+    this.reevaluate();
   }
 
-  setPlanets(planets: Set<Planet>) {
-    this.planets.next(planets);
-  }
-
-  setDateRange(start: Date, end: Date) {
-    // TODO: validate start < end
-    // TODO: validate range not too big
-    this.dateRange.next({ start, end });
-  }
-
-  reevaluate() {
+  private reevaluate() {
     this.ephs.next({
       events: calculate(
         this.sweph,
-        this.planets.value,
-        this.dateRange.value.start,
-        this.dateRange.value.end,
+        this.cfg.planets,
+        this.cfg.start,
+        this.cfg.end,
       ),
     });
   }
@@ -95,13 +107,13 @@ function calculate(
   while (d <= end) {
     n++;
     if (n > MAX_PRECOMPUTE_ITERATIONS) {
-      throw new Error('Too many iterations in ephemeris calculation');
+      break
     }
     const { jd, err } = sweph.jd(d);
     if (err) throw new Error(err);
     jds.push(jd);
     dates.push(new Date(d));
-    d = new Date(d.getTime() + HALF_DAY_MS);
+    d = new Date(d.getTime() + STEP_MS);
   }
 
   const planetsPositions: Map<Planet, number[]> = new Map();
@@ -123,13 +135,12 @@ function calculate(
       const posA = planetsPositions.get(planetA);
       const posB = planetsPositions.get(planetB);
       if (!posA || !posB) throw new Error('Missing planet positions');
-
-      for (let k = 1; k < jds.length; k++) {
-        const angle1 = separationAngle(posA[k - 1], posB[k - 1]);
-        const angle2 = separationAngle(posA[k], posB[k]);
-
-        // Check for sign change indicating a conjunction
-        if (angle1 * angle2 <= 0) {
+      for (let k = 1; k < jds.length - 1; k++) {
+        const sep0 = separationAngle(posA[k - 1], posB[k - 1]);
+        const sep1 = separationAngle(posA[k], posB[k]);
+        const sep2 = separationAngle(posA[k + 1], posB[k + 1]);
+        const isMinimum = sep1 < sep0 && sep1 < sep2;
+        if (isMinimum && Math.abs(sep1) < 10) {
           // TODO: Refine the conjunction time
           results.push({
             time: dates[k],
@@ -149,6 +160,12 @@ function calculate(
   return results;
 }
 
-function separationAngle(lon1: number, lon2: number): number {
-  return (lon1 - lon2) % 360;
+// separationAngle returns the angle between two planets, normalized to the
+// range [0, 180] degrees.
+function separationAngle(angle1: number, angle2: number): number {
+  let diff = Math.abs(angle1 - angle2) % 360;
+  if (diff > 180) {
+    diff = 360 - diff;
+  }
+  return diff;
 }

@@ -1,5 +1,5 @@
-import { Subject } from 'rxjs';
-import { Canvas, Render } from './canvas';
+import { BehaviorSubject } from 'rxjs';
+import { Canvas } from './canvas';
 import { Chart } from './chart';
 import { chartComponent } from './chart.component';
 import { lskGeolat, lskGeolon, lskTime, lskTimezone } from './constants';
@@ -8,15 +8,13 @@ import { ephGraphComponent } from './ephgraph.component';
 import { loadFonts } from './preloadfonts';
 import './style.css';
 import { swephInit } from './sweph';
-import { EphTable } from './eph-table.component';
 import { EphemerisService, Ephemeris } from './ephemeris.service';
 
 async function main() {
   const sweph = await swephInit();
 
-  const ephCfgSubj = new Subject<Ephemeris>();
-  const ephService = new EphemerisService(sweph, ephCfgSubj);
-  const ephTableComponent = new EphTable(ephCfgSubj.asObservable());
+  const ephsSubj = new BehaviorSubject<Ephemeris>({ events: [] });
+  const ephService = new EphemerisService(sweph, ephsSubj);
 
   const app = document.getElementById('app');
   if (!app) throw new Error('No app element');
@@ -73,10 +71,13 @@ async function main() {
     width,
     radius,
     range: [d1, d2],
-  });
+  }, ephService);
 
   const canvasApp = new Canvas(chart, ephGraph);
-  canvasApp.setCfg({ render: 'chart' });
+
+  canvasApp.loadEphGraphCfg();
+
+  let renderMode = canvasApp.resolveRender()
 
   const { timeContainer, geoContainer, tableButtonContainer } = chartComponent(
     canvasApp,
@@ -87,18 +88,21 @@ async function main() {
     geolon,
   );
 
-  const { ephGrphContainer, ephTableContainer } = ephGraphComponent(
+  const {
+    ephGrphContainer,
+    ephTableContainer,
+    ephTableComponent,
+  } = ephGraphComponent(
     canvasApp,
     d1,
     d2,
-    ephService,
+    ephsSubj.asObservable(),
   );
 
   // screen container
   const screenContainer = document.createElement('div');
 
   // mode radio
-  let mode: Render = 'chart';
   const modeRadioContainer = document.createElement('div');
   modeRadioContainer.classList.add('mode-radio-container');
   const modeRadioLabel = document.createElement('label');
@@ -114,8 +118,8 @@ async function main() {
   modeRadioEphGraph.name = 'mode';
   modeRadioEphGraph.value = 'ephGraph';
 
-  modeRadioChart.checked = true;
-  modeRadioEphGraph.checked = false;
+  modeRadioChart.checked = renderMode === 'chart';
+  modeRadioEphGraph.checked = renderMode === 'ephGraph';
 
   const modeRadioEphGraphLabel = document.createElement('label');
   modeRadioEphGraphLabel.innerHTML = 'Ephemeris Graph';
@@ -123,37 +127,43 @@ async function main() {
   modeRadioContainer.appendChild(modeRadioChart);
   modeRadioContainer.appendChild(modeRadioChartLabel);
   modeRadioContainer.appendChild(modeRadioEphGraph);
-  modeRadioChart.onchange = () => {
+
+  function renderChart() {
     screenContainer.innerHTML = '';
     screenContainer.appendChild(timeContainer);
     screenContainer.appendChild(geoContainer);
     screenContainer.appendChild(canvas);
     screenContainer.appendChild(tableButtonContainer);
-    mode = 'chart';
-    canvasApp.setCfg({ render: 'chart' });
     ephTableComponent.onDestroy();
-  };
-  modeRadioEphGraph.onchange = () => {
+    canvasApp.setCfg({ render: 'chart' });
+  }
+
+  function renderEphGraph() {
     screenContainer.innerHTML = '';
     screenContainer.appendChild(ephGrphContainer);
     screenContainer.appendChild(canvas);
     screenContainer.appendChild(ephTableContainer);
-    mode = 'ephGraph';
-    canvasApp.setCfg({ render: 'ephGraph' });
     ephTableComponent.onInit();
-  };
+    canvasApp.setCfg({ render: 'ephGraph' });
+  }
+
+  modeRadioChart.onchange = renderChart
+  modeRadioEphGraph.onchange = renderEphGraph
 
   // append elements to the DOM
-  screenContainer.appendChild(timeContainer);
-  screenContainer.appendChild(geoContainer);
-  screenContainer.appendChild(canvas);
-  screenContainer.appendChild(tableButtonContainer);
+  if (renderMode === 'chart') {
+    renderMode = 'chart';
+    renderChart();
+  } else if (renderMode === 'ephGraph') {
+    renderMode = 'ephGraph';
+    renderEphGraph();
+  }
   app.appendChild(modeRadioContainer);
   app.appendChild(screenContainer);
 
   // moving mouse on the canvas, show the description of the point
   canvas.addEventListener('mousemove', (ev) => {
-    if (mode !== 'ephGraph') return;
+    if (renderMode !== 'ephGraph') return;
     ephGraph.pointDescription(ev.offsetX, ev.offsetY);
   });
 }
