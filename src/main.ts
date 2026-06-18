@@ -163,7 +163,7 @@ async function main() {
 
   // moving mouse on the canvas, show the description of the point
   canvas.addEventListener('mousemove', (ev) => {
-    if (renderMode !== 'ephGraph') return;
+    if (canvasApp.getRender() !== 'ephGraph') return;
     ephGraph.pointDescription(ev.offsetX, ev.offsetY);
   });
 }

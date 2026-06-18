@@ -14,6 +14,8 @@ export interface CanvasCfg {
 }
 
 export class Canvas {
+  private render: Render = 'chart';
+
   constructor(
     private chart: Chart,
     private ephGraph: EphGraph,
@@ -24,7 +26,10 @@ export class Canvas {
     if (cfg.ephGraph) {
       this.ephGraph.setCfg(cfg.ephGraph);
     }
-    if (cfg.render) localStorage.setItem(RENDER_KEY, cfg.render);
+    if (cfg.render) {
+      localStorage.setItem(RENDER_KEY, cfg.render);
+      this.render = cfg.render;
+    }
     switch (cfg.render) {
       case 'chart':
         this.chart.render();
@@ -44,6 +49,10 @@ export class Canvas {
     if (cached === 'chart' || cached === 'ephGraph') return cached;
     localStorage.setItem(RENDER_KEY, 'chart');
     return 'chart';
+  }
+
+  getRender(): Render {
+    return this.render;
   }
 
   ephGraphPlanetCheckedSubj(planet: Planet): Subject<boolean> {
