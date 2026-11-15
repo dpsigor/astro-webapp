@@ -39,10 +39,26 @@ export const signGlyphUnicode = [
   '♓︎',
 ];
 
+/** House systems, identified by their Swiss Ephemeris letter. */
 export enum HouseSystem {
-  Placidus = 'P'.charCodeAt(0),
-  Regiomontanus = 'R'.charCodeAt(0),
+  Placidus = 'P',
+  Koch = 'K',
+  Regiomontanus = 'R',
+  Campanus = 'C',
+  Porphyry = 'O',
+  Equal = 'A',
+  WholeSign = 'W',
 }
+
+export const houseSystems: { value: HouseSystem; label: string }[] = [
+  { value: HouseSystem.Placidus, label: 'Placidus' },
+  { value: HouseSystem.Koch, label: 'Koch' },
+  { value: HouseSystem.Regiomontanus, label: 'Regiomontanus' },
+  { value: HouseSystem.Campanus, label: 'Campanus' },
+  { value: HouseSystem.Porphyry, label: 'Porphyry' },
+  { value: HouseSystem.Equal, label: 'Equal' },
+  { value: HouseSystem.WholeSign, label: 'Whole sign' },
+];
 
 export enum Planet {
   Sun = 0,
@@ -239,7 +255,9 @@ export class SwEph {
     jd: number,
     planet: Planet,
   ): { lon: number; slon: number; err?: string } {
-    const iflag = 128; // no flags
+    // SEFLG_SPEED. The old value, 128 (SEFLG_SPEED3), gave the same result
+    // five times slower.
+    const iflag = 256;
     const xxPtr = 0;
     const serrPtr = 6 * 8;
     const calcCode = this.astro.swe_calc_ut(jd, planet, iflag, xxPtr, serrPtr);
@@ -253,12 +271,29 @@ export class SwEph {
     return { lon, slon: xx[3] };
   }
 
-  houses(jd: number, geolat: number, geolon: number, hsys: HouseSystem) {
+  /**
+   * House cusps (index 0 is the first house) plus the ascendant and the
+   * midheaven, which are not cusps in every house system.
+   */
+  houses(
+    jd: number,
+    geolat: number,
+    geolon: number,
+    hsys: HouseSystem,
+  ): { cusps: number[]; asc: number; mc: number } {
     const cuspsPtr = 0;
     const ascmcPtr = 13 * 8;
-    this.astro.swe_houses(jd, geolat, geolon, hsys, cuspsPtr, ascmcPtr);
+    this.astro.swe_houses(
+      jd,
+      geolat,
+      geolon,
+      hsys.charCodeAt(0),
+      cuspsPtr,
+      ascmcPtr,
+    );
     const cusps = new Float64Array(this.astro.memory.buffer, cuspsPtr, 13);
-    return Array.from(cusps).slice(1);
+    const ascmc = new Float64Array(this.astro.memory.buffer, ascmcPtr, 2);
+    return { cusps: Array.from(cusps).slice(1), asc: ascmc[0], mc: ascmc[1] };
   }
 }
 
@@ -280,7 +315,7 @@ export async function swephInit(): Promise<SwEph> {
   const inst = await WebAssembly.instantiate(wasm, {
     wasi_snapshot_preview1: wasi.wasiImport,
   });
-  wasi.start(inst as unknown as any);
-  const sweph = new SwEph(inst.exports as unknown as any);
+  wasi.start(inst as unknown as Parameters<WASI['start']>[0]);
+  const sweph = new SwEph(inst.exports as unknown as Astro);
   return sweph;
 }

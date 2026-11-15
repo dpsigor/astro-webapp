@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+
+@theme {
+  /* no emoji fonts, so the planet and sign symbols render as plain text */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+
+  /* loaded at startup by lib/fonts.ts */
+  --font-glyphs: 'glyphsFont';
+
+  --animate-slide-in-left: slide-in-left 0.2s ease-out;
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply min-w-80 bg-slate-950 text-slate-200 antialiased;
+    background-image: radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      rgb(79 70 229 / 0.18),
+      transparent
+    );
+    background-repeat: no-repeat;
+  }
+}
