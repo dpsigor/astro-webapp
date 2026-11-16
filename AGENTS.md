@@ -18,17 +18,21 @@ Deployed to GitHub Pages under `/astro-webapp/` on every push to `master`.
 | `npm run dev`      | Dev server on http://localhost:4200     |
 | `npm run build`    | Type-check (`tsc`) and production build |
 | `npm run lint`     | ESLint                                  |
+| `npm run test`     | Unit tests (Vitest)                     |
 | `npm run prettier` | Format the whole repo                   |
 
-There is no test suite.
+Tests live in `test/`, outside `src`, so `tsc` does not type-check them: they
+read `astro.wasm` from disk and there is no `@types/node`. Shared helpers,
+including the loader for the WASM module, are in `test/helpers.ts`.
 
 ## Before calling a change done
 
-Run all three and fix whatever they report:
+Run all four and fix whatever they report:
 
 1. `npm run prettier`
 2. `npm run lint`
-3. `npm run build`
+3. `npm run test`
+4. `npm run build`
 
 Say so plainly if any of them still fails, or if a UI change was not checked in
 a browser.

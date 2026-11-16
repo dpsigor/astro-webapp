@@ -9,6 +9,7 @@ import type { CanvasSize } from '../lib/canvasSize';
 import { computeChart, drawChart, type ChartOptions } from '../lib/chart';
 import {
   fromZonedInputs,
+  isValidTimezone,
   localTimezone,
   supportedTimezones,
   toZonedInputs,
@@ -36,6 +37,11 @@ const dateCodec: Codec<Date> = {
   serialize: (date) => date.valueOf().toString(),
 };
 
+const timezoneCodec: Codec<string> = {
+  parse: (raw) => (isValidTimezone(raw) ? raw : undefined),
+  serialize: (tz) => tz,
+};
+
 interface ChartViewProps {
   size: CanvasSize;
   options: ChartOptions;
@@ -52,7 +58,7 @@ export function ChartView({ size, options }: ChartViewProps) {
   const [timezone, setTimezone] = usePersistentState(
     TIMEZONE_KEY,
     localTimezone,
-    stringCodec,
+    timezoneCodec,
   );
   // The date and time inputs hold wall-clock time in the selected time zone.
   // They are kept as typed, since they can be incomplete while being edited.
