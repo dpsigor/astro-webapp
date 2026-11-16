@@ -47,7 +47,7 @@ export function findConjunctions(
   const longitude = (planet: Planet, time: number) => {
     const { jd, err } = sweph.jd(new Date(time));
     if (err) throw new Error(err);
-    const { lon, err: err2 } = sweph.planetPos(jd, planet);
+    const { lon, err: err2 } = sweph.planetLon(jd, planet);
     if (err2) throw new Error(err2);
     return lon;
   };
@@ -56,12 +56,14 @@ export function findConjunctions(
   for (let t = start.getTime(); t < endMs; t += STEP_MS) times.push(t);
   times.push(endMs);
 
+  // Times in the outer loop: the library reuses work between planets at the
+  // same instant.
   const positions = new Map(
-    planetList.map((planet) => [
-      planet,
-      times.map((time) => longitude(planet, time)),
-    ]),
+    planetList.map((planet) => [planet, [] as number[]]),
   );
+  for (const time of times) {
+    for (const [planet, lons] of positions) lons.push(longitude(planet, time));
+  }
 
   const results: Conjunction[] = [];
   for (let i = 0; i < planetList.length; i++) {

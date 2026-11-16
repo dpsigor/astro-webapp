@@ -46,15 +46,27 @@ export function computeGraphPoints(
   const step = (width - 2 * PAD) / STEPS;
   const t0 = start.getTime();
   const dt = (end.getTime() - t0) / STEPS;
-  for (const planet of planets) {
+  // Sampled with times in the outer loop: the library reuses work between
+  // planets at the same instant.
+  const dates: Date[] = [];
+  const lons = planets.map(() => [] as number[]);
+  for (let i = 0; i < STEPS; i++) {
+    const date = new Date(t0 + i * dt);
+    dates.push(date);
+    const { jd, err } = sweph.jd(date);
+    if (err) throw new Error(err);
+    planets.forEach((planet, p) => {
+      const { lon, err } = sweph.planetLon(jd, planet);
+      if (err) throw new Error(err);
+      lons[p].push(lon);
+    });
+  }
+  for (const [p, planet] of planets.entries()) {
     const color = planetColors[planet];
     if (!color) throw new Error(`no color for planet ${planet}`);
     for (let i = 0; i < STEPS; i++) {
-      const date = new Date(t0 + i * dt);
-      const { jd, err } = sweph.jd(date);
-      if (err) throw new Error(err);
-      const { lon, err: err2 } = sweph.planetPos(jd, planet);
-      if (err2) throw new Error(err2);
+      const date = dates[i];
+      const lon = lons[p][i];
       const x = originX + i * step;
       const y = originY - (lon * (height - 2 * PAD)) / 360;
       const point = { x, y, date, lon, color };
