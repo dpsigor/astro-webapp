@@ -7,13 +7,14 @@ import { Modal } from './Modal';
 
 const HEADERS = ['Planet', 'Longitude', 'Speed'];
 
-function positionRows({ positions, asc, mc }: ChartData): string[][] {
+function positionRows({ positions, points, asc, mc }: ChartData): string[][] {
   return [
     ...Array.from(positions, ([planet, { lon, slon }]) => [
       planetGlyphUnicode[planet],
       formatTableAngle(lon),
       slon.toFixed(2),
     ]),
+    ...points.map(({ label, lon }) => [label, formatTableAngle(lon), '']),
     ['ASC', formatTableAngle(asc), ''],
     ['MC', formatTableAngle(mc), ''],
   ];

@@ -1,10 +1,7 @@
 import { WASI, File, OpenFile } from '@bjorn3/browser_wasi_shim';
 
-export const nodeGlyphs = [
-  'L', // north
-  'M',
-];
-
+export const northNodeGlyph = 'L';
+export const southNodeGlyph = 'M';
 export const partFortuneGlyph = 'O';
 export const ACGlyph = 'P';
 export const MCGlyph = 'Q';
@@ -228,6 +225,8 @@ const SEFLG_MOSEPH = 4;
 // slower.
 const SEFLG_SPEED = 256;
 
+const SE_MEAN_NODE = 10;
+
 const SERR_SIZE = 256;
 
 export class SwEph {
@@ -306,9 +305,18 @@ export class SwEph {
    * library reuses its work for consecutive calls at the same instant.
    */
   planetLon(jd: number, planet: Planet): { lon: number; err?: string } {
+    return this.bodyLon(jd, planet);
+  }
+
+  /** Longitude of the mean north node; the south node is opposite to it. */
+  northNodeLon(jd: number): { lon: number; err?: string } {
+    return this.bodyLon(jd, SE_MEAN_NODE);
+  }
+
+  private bodyLon(jd: number, ipl: number): { lon: number; err?: string } {
     const code = this.astro.swe_calc_ut(
       jd,
-      planet,
+      ipl,
       SEFLG_MOSEPH,
       this.f64Ptr,
       this.serrPtr,

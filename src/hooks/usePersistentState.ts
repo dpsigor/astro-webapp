@@ -11,6 +11,11 @@ export const stringCodec: Codec<string> = {
   serialize: (value) => value,
 };
 
+export const booleanCodec: Codec<boolean> = {
+  parse: (raw) => (raw === 'true' ? true : raw === 'false' ? false : undefined),
+  serialize: (value) => String(value),
+};
+
 /**
  * Like useState, but the initial value is read from localStorage and every
  * update is written back to it. The default is not stored until it is changed.
