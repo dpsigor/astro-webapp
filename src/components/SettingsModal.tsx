@@ -56,6 +56,17 @@ export function SettingsModal({
             {label}
           </label>
         ))}
+        <p className="border-t border-slate-800 pt-4 text-left text-xs text-slate-400">
+          Positions are computed with the Swiss Ephemeris, under the AGPL-3.0.{' '}
+          <a
+            className="text-indigo-300 underline hover:text-indigo-200"
+            href="https://github.com/dpsigor/astro-webapp"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Source code on GitHub
+          </a>
+        </p>
       </div>
     </Modal>
   );
