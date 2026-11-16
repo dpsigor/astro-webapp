@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "sweph:build": "make -C vendor/swisseph install",
+    "sweph:check": "vendor/swisseph/update.sh check"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

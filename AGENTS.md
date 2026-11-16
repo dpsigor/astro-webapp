@@ -44,6 +44,9 @@ a browser.
 - `src/components/` — React components.
 - `src/context/` — the provider that loads the WASM module.
 - `src/hooks/` — shared hooks, including `usePersistentState` (localStorage).
+- `vendor/swisseph/` — the Swiss Ephemeris C sources and the Makefile that
+  builds `astro.wasm` from them. See its `README.md` for rebuilding, exporting
+  another function and following upstream.
 
 ## Design
 
@@ -103,9 +106,13 @@ undo your own edit, edit the file back instead of using version control.
 
 ## Do not touch unless asked
 
-- **`astro.wasm`** — the compiled Swiss Ephemeris binary. Treat it as
-  read-only. Its TypeScript bindings in `src/lib/sweph.ts` are normal code and
-  can be edited.
+- **`astro.wasm`** — the compiled Swiss Ephemeris binary. Never edit it by
+  hand. It changes only by rebuilding from `vendor/swisseph` with
+  `npm run sweph:build`, and only when the task calls for it. Its TypeScript
+  bindings in `src/lib/sweph.ts` are normal code and can be edited.
+- **`vendor/swisseph/src/`** — unmodified copies of upstream files. Do not edit
+  them: they change only through `vendor/swisseph/update.sh`. What is specific
+  to this app (flags, exported functions) belongs in `vendor/swisseph/Makefile`.
 - **`.github/workflows/main.yml` and `base` in `vite.config.js`** — the GitHub
   Pages deploy depends on both. The workflow also copies `astro.wasm` and the
   glyph font into `dist`, and the app fetches them by relative path, so do not
