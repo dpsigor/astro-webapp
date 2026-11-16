@@ -283,7 +283,11 @@ export function drawChart(
 }
 
 /** Color of the aspect between two planets, or '' when they form none. */
-function aspectColor(angle: number, sign1: number, sign2: number): string {
+export function aspectColor(
+  angle: number,
+  sign1: number,
+  sign2: number,
+): string {
   const orb = 5;
   const near = (target: number) => angle > target - orb && angle < target + orb;
   const signDiff = sign1 - sign2;
