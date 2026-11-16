@@ -6,14 +6,13 @@ import {
   type Codec,
 } from '../hooks/usePersistentState';
 import type { CanvasSize } from '../lib/canvasSize';
-import { computeChart, drawChart } from '../lib/chart';
+import { computeChart, drawChart, type ChartOptions } from '../lib/chart';
 import {
   fromZonedInputs,
   localTimezone,
   supportedTimezones,
   toZonedInputs,
 } from '../lib/dates';
-import type { HouseSystem } from '../lib/sweph';
 import { Button } from './Button';
 import { Canvas } from './Canvas';
 import { Card } from './Card';
@@ -39,10 +38,10 @@ const dateCodec: Codec<Date> = {
 
 interface ChartViewProps {
   size: CanvasSize;
-  houseSystem: HouseSystem;
+  options: ChartOptions;
 }
 
-export function ChartView({ size, houseSystem }: ChartViewProps) {
+export function ChartView({ size, options }: ChartViewProps) {
   const sweph = useSweph();
 
   const [date, setDate] = usePersistentState(
@@ -76,12 +75,12 @@ export function ChartView({ size, houseSystem }: ChartViewProps) {
 
   const chart = useMemo(() => {
     try {
-      return computeChart(sweph, date, geolat, geolon, houseSystem);
+      return computeChart(sweph, date, geolat, geolon, options);
     } catch (e) {
       console.error('Failed to compute chart', e);
       return null;
     }
-  }, [sweph, date, geolat, geolon, houseSystem]);
+  }, [sweph, date, geolat, geolon, options]);
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {

@@ -4,9 +4,12 @@ import {
   Planet,
   SwEph,
   dignity,
+  northNodeGlyph,
+  partFortuneGlyph,
   planetGlyph,
   planets,
   signGlyph,
+  southNodeGlyph,
 } from './sweph';
 import type { CanvasSize } from './canvasSize';
 
@@ -18,6 +21,32 @@ export interface ChartData {
   /** Midheaven, in degrees. */
   mc: number;
   positions: Map<Planet, { lon: number; slon: number }>;
+  /** Optional non-planet points, such as the nodes. They form no aspects. */
+  points: ChartPoint[];
+}
+
+export interface ChartPoint {
+  /** Character in the glyph font. */
+  glyph: string;
+  /** Plain-text name for tables. */
+  label: string;
+  lon: number;
+}
+
+export interface ChartOptions {
+  houseSystem: HouseSystem;
+  partOfFortune: boolean;
+  nodes: boolean;
+}
+
+const norm360 = (lon: number) => ((lon % 360) + 360) % 360;
+
+/** Asc + Moon - Sun by day, Asc + Sun - Moon by night. */
+export function partOfFortune(asc: number, sun: number, moon: number) {
+  // houses 7 to 12, the half of the ecliptic after the descendant, are above
+  // the horizon
+  const isDay = norm360(sun - asc) >= 180;
+  return norm360(isDay ? asc + moon - sun : asc + sun - moon);
 }
 
 export function computeChart(
@@ -25,7 +54,7 @@ export function computeChart(
   date: Date,
   geolat: number,
   geolon: number,
-  houseSystem: HouseSystem,
+  { houseSystem, partOfFortune: showFortune, nodes: showNodes }: ChartOptions,
 ): ChartData {
   const { jd, err } = sweph.jd(date);
   if (err) throw new Error(err);
@@ -40,7 +69,25 @@ export function computeChart(
     if (err) throw new Error(err);
     positions.set(planet, { lon, slon });
   }
-  return { houses, asc, mc, positions };
+  const points: ChartPoint[] = [];
+  if (showNodes) {
+    const { lon, err } = sweph.northNodeLon(jd);
+    if (err) throw new Error(err);
+    points.push(
+      { glyph: northNodeGlyph, label: 'North node', lon },
+      { glyph: southNodeGlyph, label: 'South node', lon: norm360(lon + 180) },
+    );
+  }
+  const sun = positions.get(Planet.Sun);
+  const moon = positions.get(Planet.Moon);
+  if (showFortune && sun && moon) {
+    points.push({
+      glyph: partFortuneGlyph,
+      label: 'Part of Fortune',
+      lon: partOfFortune(asc, sun.lon, moon.lon),
+    });
+  }
+  return { houses, asc, mc, positions, points };
 }
 
 function dignityColor(d?: Dignity) {
@@ -62,7 +109,7 @@ function dignityColor(d?: Dignity) {
 /** Draws the chart wheel on a cleared canvas. */
 export function drawChart(
   ctx: CanvasRenderingContext2D,
-  { houses, asc, mc, positions }: ChartData,
+  { houses, asc, mc, positions, points }: ChartData,
   { width, height, radius }: CanvasSize,
 ) {
   const cx = width / 2;
@@ -126,15 +173,18 @@ export function drawChart(
     const fontHeight =
       metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
     const radiusPlanets = radius + 20;
-    for (const [planet, { lon, slon }] of positions) {
-      ctx.fillStyle = dignityColor(dignity(planet, lon));
+    const drawBody = (
+      glyph: string,
+      lon: number,
+      color: string,
+      retrograde: boolean,
+    ) => {
+      ctx.fillStyle = color;
       const rads = ((angleOffset - lon) * Math.PI) / 180;
-      planetRads.set(planet, rads);
       const x = cx + radiusPlanets * Math.cos(rads);
       const y = cy + radiusPlanets * Math.sin(rads);
-      ctx.fillText(planetGlyph[planet], x, y + fontHeight / 4);
-      // if retrograde, write an R
-      if (slon < 0) {
+      ctx.fillText(glyph, x, y + fontHeight / 4);
+      if (retrograde) {
         ctx.textAlign = 'left';
         ctx.font = '10px Arial';
         ctx.fillText(
@@ -161,7 +211,17 @@ export function drawChart(
       ctx.moveTo(x0, y0);
       ctx.lineTo(x1, y1);
       ctx.stroke();
+      return rads;
+    };
+    for (const [planet, { lon, slon }] of positions) {
+      const color = dignityColor(dignity(planet, lon));
+      planetRads.set(
+        planet,
+        drawBody(planetGlyph[planet], lon, color, slon < 0),
+      );
     }
+    for (const { glyph, lon } of points)
+      drawBody(glyph, lon, dignityColor(), false);
   }
 
   // draw aspects
